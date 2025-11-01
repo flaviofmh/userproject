@@ -2,6 +2,7 @@ package com.user.project.User.Project.infrastructure.exception;
 
 import com.user.project.User.Project.domain.exception.BusinessException;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -66,6 +67,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .userMessage(detail)
                 .fields(problemFields)
                 .build();
+
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        IssueType problemType = IssueType.ERR_DATA_INTEGRITY;
+        String detail = "Operation could not be completed due to data integrity violation.";
+
+        var problem = createProblemBuilder(status, problemType, detail).build();
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }

@@ -6,6 +6,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -69,6 +71,28 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        IssueType problemType = IssueType.INVALID_PARAMETER;
+        String detail = "One or more parameters are invalid.";
+
+        BindingResult bindingResult = ex.getBindingResult();
+
+        List<Issue.Field> problemFields = bindingResult.getFieldErrors().stream()
+                .map(fieldError -> Issue.Field.builder()
+                        .name(fieldError.getField())
+                        .userMessage(fieldError.getDefaultMessage())
+                        .build())
+                .collect(Collectors.toList());
+
+        Issue problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(detail)
+                .fields(problemFields)
+                .build();
+
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
+    @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
         if (body == null) {
             body = Issue.builder()
@@ -91,6 +115,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private Issue.Builder createProblemBuilder(HttpStatusCode status, IssueType problemType, String detail) {
         return Issue.builder()
                 .status(status.value())
+                .timestamp(LocalDateTime.now())
                 .type(problemType.getUri())
                 .title(problemType.getTitle())
                 .detail(detail);

@@ -1,7 +1,6 @@
 package com.user.project.User.Project.infrastructure.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "tb_user")
@@ -11,11 +10,9 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(name = "email", length = 200, nullable = false)
     private String email;
 
-    @NotNull
     @Column(name = "password", length = 129, nullable = false)
     private String password;
 

@@ -4,6 +4,7 @@ import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.usecase.UserCreationUseCase;
 import com.user.project.User.Project.presentation.request.UserRequest;
 import com.user.project.User.Project.presentation.response.UserResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,18 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse create(@RequestBody UserRequest userRequest) {
+    public UserResponse create(@RequestBody @Valid UserRequest userRequest) {
         final User userDomain = new User();
         BeanUtils.copyProperties(userRequest, userDomain, "id");
 
         userCreationUseCase.execute(userDomain);
 
-        var userResponse = new UserResponse(null, null, null, null);
-        BeanUtils.copyProperties(userDomain, userResponse);
+        var userResponse = new UserResponse(
+                userDomain.getId(),
+                userDomain.getEmail(),
+                userDomain.getPassword(),
+                userDomain.getName()
+        );
 
         return userResponse;
     }

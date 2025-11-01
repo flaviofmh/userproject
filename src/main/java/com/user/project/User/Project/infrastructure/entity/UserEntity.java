@@ -1,18 +1,25 @@
 package com.user.project.User.Project.infrastructure.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "tb_user")
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
+    @Column(name = "email", length = 200, nullable = false)
     private String email;
+
+    @NotNull
+    @Column(name = "password", length = 129, nullable = false)
     private String password;
+
+    @Column(name = "name", length = 120, nullable = true)
     private String name;
 
     public UserEntity() {

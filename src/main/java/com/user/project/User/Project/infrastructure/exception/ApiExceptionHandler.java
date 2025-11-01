@@ -1,6 +1,7 @@
 package com.user.project.User.Project.infrastructure.exception;
 
 import com.user.project.User.Project.domain.exception.BusinessException;
+import com.user.project.User.Project.domain.exception.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -122,6 +123,21 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                     .build();
         }
         return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex,
+                                                         WebRequest request) {
+
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        IssueType problemType = IssueType.RESOURCE_NOT_FOUND;
+        String detail = ex.getMessage();
+
+        Issue problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(detail)
+                .build();
+
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
 
     private Issue.Builder createProblemBuilder(HttpStatusCode status, IssueType problemType, String detail) {

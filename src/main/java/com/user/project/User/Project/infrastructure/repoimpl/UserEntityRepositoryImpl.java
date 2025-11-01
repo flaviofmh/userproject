@@ -1,5 +1,6 @@
 package com.user.project.User.Project.infrastructure.repoimpl;
 
+import com.user.project.User.Project.domain.exception.EntityNotFoundException;
 import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.repository.UserRepository;
 import com.user.project.User.Project.infrastructure.entity.UserEntity;
@@ -24,4 +25,13 @@ public class UserEntityRepositoryImpl implements UserRepository {
         user.setId(userEntity.getId());
         return user;
     }
+
+    @Override
+    public User findById(Long id) {
+        return userEntityRepository.findById(id)
+                .map(userEntity -> new User(userEntity.getId(), userEntity.getName(), userEntity.getEmail(), userEntity.getPassword()))
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package com.user.project.User.Project.presentation;
 
 import com.user.project.User.Project.domain.model.User;
+import com.user.project.User.Project.domain.usecase.RetrieveUserInformationUseCase;
 import com.user.project.User.Project.domain.usecase.UserCreationUseCase;
 import com.user.project.User.Project.presentation.request.UserRequest;
 import com.user.project.User.Project.presentation.response.UserResponse;
@@ -16,6 +17,9 @@ public class UserController {
 
     @Autowired
     private UserCreationUseCase userCreationUseCase;
+
+    @Autowired
+    private RetrieveUserInformationUseCase retrieveUserInformationUseCase;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -33,6 +37,19 @@ public class UserController {
         );
 
         return userResponse;
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse getUser(@PathVariable("id") Long id) {
+        var userDomain = retrieveUserInformationUseCase.execute(id);
+
+        return new UserResponse(
+                userDomain.getId(),
+                userDomain.getEmail(),
+                userDomain.getPassword(),
+                userDomain.getName()
+        );
     }
 
 }

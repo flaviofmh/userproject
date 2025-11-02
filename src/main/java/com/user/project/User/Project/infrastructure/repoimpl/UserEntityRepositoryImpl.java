@@ -35,9 +35,6 @@ public class UserEntityRepositoryImpl implements UserRepository {
 
     @Override
     public void deleteById(Long userId) {
-        if (!userEntityRepository.existsById(userId)) {
-            throw new EntityNotFoundException("User with id " + userId + " not found");
-        }
         userEntityRepository.deleteById(userId);
     }
 

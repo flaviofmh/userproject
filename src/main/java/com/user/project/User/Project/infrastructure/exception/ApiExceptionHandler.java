@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -138,6 +139,25 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        String path = request.getDescription(false).replace("uri=", "");
+        String httpMethod = ex.getHttpMethod() != null ? ex.getHttpMethod().name() : "UNKNOWN";
+        String resource = ex.getResourcePath() != null ? ex.getResourcePath() : path;
+
+        IssueType problemType = IssueType.RESOURCE_NOT_FOUND;
+        String detail = String.format(
+                "The requested path '%s' with HTTP method '%s' was not recognized by the server.",
+                resource, httpMethod
+        );
+
+        Issue problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(detail)
+                .build();
+
+        return handleExceptionInternal(ex, problem, headers, status, request);
     }
 
     private Issue.Builder createProblemBuilder(HttpStatusCode status, IssueType problemType, String detail) {

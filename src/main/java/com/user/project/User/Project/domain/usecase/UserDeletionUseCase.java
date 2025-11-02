@@ -1,17 +1,17 @@
 package com.user.project.User.Project.domain.usecase;
 
-import com.user.project.User.Project.domain.repository.UserRepository;
+import com.user.project.User.Project.domain.repository.UserGateway;
 
 public class UserDeletionUseCase {
 
-    private final UserRepository userRepository;
+    private final UserGateway userGateway;
 
-    public UserDeletionUseCase(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserDeletionUseCase(UserGateway userGateway) {
+        this.userGateway = userGateway;
     }
 
     public void execute(Long userId) {
-        userRepository.deleteById(userId);
+        userGateway.deleteById(userId);
     }
 
 }

@@ -1,16 +1,16 @@
-package com.user.project.User.Project.infrastructure.repoimpl;
+package com.user.project.User.Project.infrastructure.gateways;
 
 import com.user.project.User.Project.domain.exception.EntityNotFoundException;
 import com.user.project.User.Project.domain.model.User;
-import com.user.project.User.Project.domain.repository.UserRepository;
+import com.user.project.User.Project.domain.repository.UserGateway;
 import com.user.project.User.Project.infrastructure.entity.UserEntity;
 import com.user.project.User.Project.infrastructure.repository.UserEntityRepository;
 
-public class UserEntityRepositoryImpl implements UserRepository {
+public class UserGatewayImpl implements UserGateway {
 
     private final UserEntityRepository userEntityRepository;
 
-    public UserEntityRepositoryImpl(UserEntityRepository userEntityRepository) {
+    public UserGatewayImpl(UserEntityRepository userEntityRepository) {
         this.userEntityRepository = userEntityRepository;
     }
 

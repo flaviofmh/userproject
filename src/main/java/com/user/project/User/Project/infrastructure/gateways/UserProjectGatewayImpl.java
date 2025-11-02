@@ -1,0 +1,34 @@
+package com.user.project.User.Project.infrastructure.gateways;
+
+import com.user.project.User.Project.domain.model.User;
+import com.user.project.User.Project.domain.model.UserProjects;
+import com.user.project.User.Project.domain.repository.UserProjectGateway;
+import com.user.project.User.Project.infrastructure.entity.UserProjectEntity;
+import com.user.project.User.Project.infrastructure.repository.UserEntityRepository;
+import com.user.project.User.Project.infrastructure.repository.UserProjectEntityRepository;
+import org.apache.logging.log4j.util.InternalException;
+
+public class UserProjectGatewayImpl implements UserProjectGateway {
+
+    private final UserEntityRepository userEntityRepository;
+    private final UserProjectEntityRepository userProjectEntityRepository;
+
+    public UserProjectGatewayImpl(UserProjectEntityRepository userProjectEntityRepository, UserEntityRepository userEntityRepository) {
+        this.userEntityRepository = userEntityRepository;
+        this.userProjectEntityRepository = userProjectEntityRepository;
+    }
+
+    @Override
+    public UserProjects save(UserProjects userProjects) {
+        var userEntity = userEntityRepository.findById(userProjects.getUser().getId())
+                .orElseThrow(() -> new InternalException("Data inconsistency: User with id " + userProjects.getUser().getId() + " not found"));
+
+        var userProjectEntity = new UserProjectEntity(null, userEntity, userProjects.getName());
+        userProjectEntityRepository.save(userProjectEntity);
+
+        var user = new User(userEntity.getId(), userEntity.getName(), userEntity.getEmail(), userEntity.getPassword());
+        var userProjectsSaved = new UserProjects(userProjectEntity.getId(), user, userProjectEntity.getName());
+
+        return userProjectsSaved;
+    }
+}

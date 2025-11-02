@@ -7,6 +7,8 @@ import com.user.project.User.Project.infrastructure.entity.UserProjectEntity;
 import com.user.project.User.Project.infrastructure.repository.UserEntityRepository;
 import com.user.project.User.Project.infrastructure.repository.UserProjectEntityRepository;
 import org.apache.logging.log4j.util.InternalException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class UserProjectGatewayImpl implements UserProjectGateway {
 
@@ -30,5 +32,13 @@ public class UserProjectGatewayImpl implements UserProjectGateway {
         var userProjectsSaved = new UserProjects(userProjectEntity.getId(), user, userProjectEntity.getName());
 
         return userProjectsSaved;
+    }
+
+    @Override
+    public Page<UserProjects> findAllByUserId(Long id, Pageable pageable) {
+        Page<UserProjectEntity> entities = userProjectEntityRepository.findAllByUserId(id, pageable);
+        return entities.map(entity ->
+                new UserProjects(entity.getId(), null, entity.getName())
+        );
     }
 }

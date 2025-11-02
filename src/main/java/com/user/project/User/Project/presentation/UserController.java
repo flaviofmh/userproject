@@ -3,6 +3,7 @@ package com.user.project.User.Project.presentation;
 import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.usecase.RetrieveUserInformationUseCase;
 import com.user.project.User.Project.domain.usecase.UserCreationUseCase;
+import com.user.project.User.Project.domain.usecase.UserDeletionUseCase;
 import com.user.project.User.Project.presentation.request.UserRequest;
 import com.user.project.User.Project.presentation.response.UserResponse;
 import jakarta.validation.Valid;
@@ -20,6 +21,9 @@ public class UserController {
 
     @Autowired
     private RetrieveUserInformationUseCase retrieveUserInformationUseCase;
+
+    @Autowired
+    private UserDeletionUseCase userDeletionUseCase;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,6 +54,12 @@ public class UserController {
                 userDomain.getPassword(),
                 userDomain.getName()
         );
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable("id") Long id) {
+        userDeletionUseCase.execute(id);
     }
 
 }

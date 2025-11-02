@@ -3,6 +3,7 @@ package com.user.project.User.Project.config;
 import com.user.project.User.Project.domain.repository.UserRepository;
 import com.user.project.User.Project.domain.usecase.RetrieveUserInformationUseCase;
 import com.user.project.User.Project.domain.usecase.UserCreationUseCase;
+import com.user.project.User.Project.domain.usecase.UserDeletionUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,6 +18,11 @@ public class UseCaseConfig {
     @Bean
     public RetrieveUserInformationUseCase retrieveUserInformationUseCase(UserRepository userRepository) {
         return new RetrieveUserInformationUseCase(userRepository);
+    }
+
+    @Bean
+    public UserDeletionUseCase userDeletionUseCase(UserRepository userRepository) {
+        return new UserDeletionUseCase(userRepository);
     }
 
 }

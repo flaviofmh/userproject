@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 public class UseCaseConfig {
 
     @Bean
-    public UserCreationUseCase userCreationUseCase(UserGateway userGateway) {
-        return new UserCreationUseCase(userGateway);
+    public UserUpsertUseCase userCreationUseCase(UserGateway userGateway) {
+        return new UserUpsertUseCase(userGateway);
     }
 
     @Bean

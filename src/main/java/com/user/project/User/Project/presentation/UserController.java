@@ -2,7 +2,7 @@ package com.user.project.User.Project.presentation;
 
 import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.usecase.RetrieveUserInformationUseCase;
-import com.user.project.User.Project.domain.usecase.UserCreationUseCase;
+import com.user.project.User.Project.domain.usecase.UserUpsertUseCase;
 import com.user.project.User.Project.domain.usecase.UserDeletionUseCase;
 import com.user.project.User.Project.presentation.request.UserRequest;
 import com.user.project.User.Project.presentation.response.UserResponse;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
-    private UserCreationUseCase userCreationUseCase;
+    private UserUpsertUseCase userUpsertUseCase;
 
     @Autowired
     private RetrieveUserInformationUseCase retrieveUserInformationUseCase;
@@ -31,7 +31,7 @@ public class UserController {
         final User userDomain = new User();
         BeanUtils.copyProperties(userRequest, userDomain, "id");
 
-        userCreationUseCase.execute(userDomain);
+        userUpsertUseCase.execute(userDomain);
 
         var userResponse = new UserResponse(
                 userDomain.getId(),
@@ -60,6 +60,24 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable("id") Long id) {
         userDeletionUseCase.execute(id);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserRequest userRequest) {
+        final User userDomain = new User();
+        retrieveUserInformationUseCase.execute(id);
+
+        BeanUtils.copyProperties(userRequest, userDomain, "id");
+        userDomain.setId(id);
+        userUpsertUseCase.execute(userDomain);
+        var userResponse = new UserResponse(
+                userDomain.getId(),
+                userDomain.getEmail(),
+                userDomain.getPassword(),
+                userDomain.getName()
+        );
+        return userResponse;
     }
 
 }

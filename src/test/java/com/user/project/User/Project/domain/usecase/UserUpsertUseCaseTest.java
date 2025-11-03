@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = UserCreationUseCaseTest.TestConfig.class)
-public class UserCreationUseCaseTest {
+@ContextConfiguration(classes = UserUpsertUseCaseTest.TestConfig.class)
+public class UserUpsertUseCaseTest {
 
     @Configuration
     static class TestConfig {
@@ -25,13 +25,13 @@ public class UserCreationUseCaseTest {
         }
 
         @Bean
-        public UserCreationUseCase userCreationUseCase(UserGateway userGateway) {
-            return new UserCreationUseCase(userGateway);
+        public UserUpsertUseCase userCreationUseCase(UserGateway userGateway) {
+            return new UserUpsertUseCase(userGateway);
         }
     }
 
     @Autowired
-    private UserCreationUseCase useCase;
+    private UserUpsertUseCase useCase;
 
     @Autowired
     private UserGateway userGateway;

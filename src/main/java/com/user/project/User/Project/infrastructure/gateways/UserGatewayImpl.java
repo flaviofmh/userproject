@@ -20,6 +20,8 @@ public class UserGatewayImpl implements UserGateway {
         userEntity.setEmail(user.getEmail());
         userEntity.setName(user.getName());
         userEntity.setPassword(user.getPassword());
+        userEntity.setId(user.getId());
+
         userEntityRepository.save(userEntity);
 
         user.setId(userEntity.getId());

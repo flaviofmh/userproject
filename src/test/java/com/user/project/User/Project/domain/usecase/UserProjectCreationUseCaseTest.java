@@ -6,6 +6,7 @@ import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.model.UserProjects;
 import com.user.project.User.Project.domain.repository.UserGateway;
 import com.user.project.User.Project.domain.repository.UserProjectGateway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -41,13 +42,18 @@ public class UserProjectCreationUseCaseTest {
     }
 
     @Autowired
-    private UserProjectCreationUseCase useCase;
+    private UserProjectCreationUseCase userProjectCreationUseCase;
 
     @Autowired
     private UserGateway userGateway;
 
     @Autowired
     private UserProjectGateway userProjectGateway;
+
+    @BeforeEach
+    void resetMocks() {
+        reset(userProjectGateway, userGateway);
+    }
 
     @Test
     void shouldCreateUserProjectWhenUserExists() {
@@ -67,7 +73,7 @@ public class UserProjectCreationUseCaseTest {
         when(userGateway.findById(userId)).thenReturn(user);
         when(userProjectGateway.save(userProjects)).thenReturn(userProjects);
 
-        UserProjects result = useCase.execute(userProjects);
+        UserProjects result = userProjectCreationUseCase.execute(userProjects);
 
         assertNotNull(result, "result should not be null");
         assertNotNull(result.getUser(), "result.user should not be null");
@@ -85,7 +91,7 @@ public class UserProjectCreationUseCaseTest {
         UserProjects userProjects = Mockito.mock(UserProjects.class);
         when(userProjects.getUser()).thenReturn(null);
 
-        assertThrows(InvalidUserProjectException.class, () -> useCase.execute(userProjects));
+        assertThrows(InvalidUserProjectException.class, () -> userProjectCreationUseCase.execute(userProjects));
         verifyNoInteractions(userProjectGateway);
     }
 
@@ -100,7 +106,7 @@ public class UserProjectCreationUseCaseTest {
 
         when(userGateway.findById(userId)).thenReturn(null);
 
-        assertThrows(EntityNotFoundException.class, () -> useCase.execute(userProjects));
+        assertThrows(EntityNotFoundException.class, () -> userProjectCreationUseCase.execute(userProjects));
         verify(userGateway).findById(userId);
         verifyNoInteractions(userProjectGateway);
     }

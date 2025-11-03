@@ -2,8 +2,8 @@ package com.user.project.User.Project.presentation;
 
 import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.usecase.RetrieveUserInformationUseCase;
-import com.user.project.User.Project.domain.usecase.UserUpsertUseCase;
 import com.user.project.User.Project.domain.usecase.UserDeletionUseCase;
+import com.user.project.User.Project.domain.usecase.UserUpsertUseCase;
 import com.user.project.User.Project.presentation.request.UserRequest;
 import com.user.project.User.Project.presentation.response.UserResponse;
 import jakarta.validation.Valid;
@@ -31,16 +31,14 @@ public class UserController {
         final User userDomain = new User();
         BeanUtils.copyProperties(userRequest, userDomain, "id");
 
-        userUpsertUseCase.execute(userDomain);
+        User createdUser = userUpsertUseCase.execute(userDomain);
 
-        var userResponse = new UserResponse(
-                userDomain.getId(),
-                userDomain.getEmail(),
-                userDomain.getPassword(),
-                userDomain.getName()
+        return new UserResponse(
+                createdUser.getId(),
+                createdUser.getEmail(),
+                createdUser.getPassword(),
+                createdUser.getName()
         );
-
-        return userResponse;
     }
 
     @GetMapping("/{id}")

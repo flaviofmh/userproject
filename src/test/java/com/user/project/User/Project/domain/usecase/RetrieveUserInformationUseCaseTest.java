@@ -4,6 +4,7 @@ import com.user.project.User.Project.domain.exception.BusinessException;
 import com.user.project.User.Project.domain.exception.EntityNotFoundException;
 import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.repository.UserGateway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -37,6 +38,11 @@ public class RetrieveUserInformationUseCaseTest {
 
     @Autowired
     private UserGateway userGateway;
+
+    @BeforeEach
+    void resetMocks() {
+        Mockito.reset(userGateway);
+    }
 
     @Test
     void shouldReturnUserWhenExists() {

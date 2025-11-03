@@ -39,4 +39,12 @@ public class UserProjects {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "UserProjects{" +
+                "id=" + id +
+                ", user=" + user +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

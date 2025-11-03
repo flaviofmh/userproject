@@ -4,6 +4,7 @@ import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.model.UserProjects;
 import com.user.project.User.Project.domain.usecase.UserProjectCreationUseCase;
 import com.user.project.User.Project.domain.usecase.UserProjectRetrievalUseCase;
+import com.user.project.User.Project.presentation.mapper.UserProjectMapper;
 import com.user.project.User.Project.presentation.request.ProjectRequest;
 import com.user.project.User.Project.presentation.response.ProjectResponse;
 import jakarta.validation.Valid;
@@ -24,12 +25,16 @@ public class UserProjectController {
     @Autowired
     private UserProjectRetrievalUseCase userProjectRetrievalUseCase;
 
+    private final UserProjectMapper userProjectMapper = UserProjectMapper.INSTANCE;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProjectResponse create(@RequestBody @Valid ProjectRequest projectRequest, @PathVariable("user-id") Long userId) {
-        var userProjectDomain = userProjectCreationUseCase.execute(new UserProjects(null, new User(userId, null, null, null), projectRequest.name()));
+        var userProjectDomain = userProjectCreationUseCase.execute(
+                new UserProjects(null, new User(userId, null, null, null), projectRequest.name())
+        );
 
-        return new ProjectResponse(userProjectDomain.getId(), userProjectDomain.getName());
+        return userProjectMapper.toResponse(userProjectDomain);
     }
 
     @GetMapping
@@ -37,9 +42,7 @@ public class UserProjectController {
     public Page<ProjectResponse> getProjects(@PathVariable("user-id") Long userId, Pageable pageable) {
         var projectDomainPage = userProjectRetrievalUseCase.retrieveProjectsByUserId(userId, pageable);
 
-        return projectDomainPage.map(projectDomain ->
-                new ProjectResponse(projectDomain.getId(), projectDomain.getName())
-        );
+        return projectDomainPage.map(userProjectMapper::toResponse);
     }
 
 }

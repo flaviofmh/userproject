@@ -1,9 +1,9 @@
 package com.user.project.User.Project.infrastructure.gateways;
 
-import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.model.UserProjects;
 import com.user.project.User.Project.domain.repository.UserProjectGateway;
 import com.user.project.User.Project.infrastructure.entity.UserProjectEntity;
+import com.user.project.User.Project.infrastructure.mapper.UserProjectInfraMapper;
 import com.user.project.User.Project.infrastructure.repository.UserEntityRepository;
 import com.user.project.User.Project.infrastructure.repository.UserProjectEntityRepository;
 import org.apache.logging.log4j.util.InternalException;
@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public class UserProjectGatewayImpl implements UserProjectGateway {
+
+    private final UserProjectInfraMapper userProjectInfraMapper = UserProjectInfraMapper.INSTANCE;
 
     private final UserEntityRepository userEntityRepository;
     private final UserProjectEntityRepository userProjectEntityRepository;
@@ -28,8 +30,7 @@ public class UserProjectGatewayImpl implements UserProjectGateway {
         var userProjectEntity = new UserProjectEntity(null, userEntity, userProjects.getName());
         userProjectEntityRepository.save(userProjectEntity);
 
-        var user = new User(userEntity.getId(), userEntity.getName(), userEntity.getEmail(), userEntity.getPassword());
-        var userProjectsSaved = new UserProjects(userProjectEntity.getId(), user, userProjectEntity.getName());
+        var userProjectsSaved = userProjectInfraMapper.toDomain(userProjectEntity, userEntity);
 
         return userProjectsSaved;
     }

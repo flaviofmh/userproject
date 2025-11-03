@@ -3,12 +3,14 @@ package com.user.project.User.Project.infrastructure.gateways;
 import com.user.project.User.Project.domain.exception.EntityNotFoundException;
 import com.user.project.User.Project.domain.model.User;
 import com.user.project.User.Project.domain.repository.UserGateway;
-import com.user.project.User.Project.infrastructure.entity.UserEntity;
+import com.user.project.User.Project.infrastructure.mapper.UserInfraMapper;
 import com.user.project.User.Project.infrastructure.repository.UserEntityRepository;
 
 public class UserGatewayImpl implements UserGateway {
 
     private final UserEntityRepository userEntityRepository;
+
+    private final UserInfraMapper userInfraMapper = UserInfraMapper.INSTANCE;
 
     public UserGatewayImpl(UserEntityRepository userEntityRepository) {
         this.userEntityRepository = userEntityRepository;
@@ -16,11 +18,7 @@ public class UserGatewayImpl implements UserGateway {
 
     @Override
     public User save(User user) {
-        var userEntity = new UserEntity();
-        userEntity.setEmail(user.getEmail());
-        userEntity.setName(user.getName());
-        userEntity.setPassword(user.getPassword());
-        userEntity.setId(user.getId());
+        var userEntity = userInfraMapper.toEntity(user);
 
         userEntityRepository.save(userEntity);
 
@@ -31,7 +29,7 @@ public class UserGatewayImpl implements UserGateway {
     @Override
     public User findById(Long id) {
         return userEntityRepository.findById(id)
-                .map(userEntity -> new User(userEntity.getId(), userEntity.getName(), userEntity.getEmail(), userEntity.getPassword()))
+                .map(userEntity -> userInfraMapper.toDomain(userEntity))
                 .orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
     }
 

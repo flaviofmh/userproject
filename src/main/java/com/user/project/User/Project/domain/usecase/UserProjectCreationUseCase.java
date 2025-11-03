@@ -5,9 +5,12 @@ import com.user.project.User.Project.domain.exception.InvalidUserProjectExceptio
 import com.user.project.User.Project.domain.model.UserProjects;
 import com.user.project.User.Project.domain.repository.UserGateway;
 import com.user.project.User.Project.domain.repository.UserProjectGateway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserProjectCreationUseCase {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserProjectCreationUseCase.class);
     private final UserGateway userGateway;
     private final UserProjectGateway userProjectGateway;
 
@@ -18,10 +21,12 @@ public class UserProjectCreationUseCase {
 
     public UserProjects execute(UserProjects userProjects) {
         if (userProjects.getUser() == null || userProjects.getUser().getId() == null) {
+            logger.error("Invalid UserProject: User is null or User ID is null");
             throw new InvalidUserProjectException("The Project must be associated with a valid User");
         }
 
         if (userGateway.findById(userProjects.getUser().getId()) == null) {
+            logger.error("User with id {} not found", userProjects.getUser().getId());
             throw new EntityNotFoundException("User with id " + userProjects.getUser().getId() + " not found");
         }
 

@@ -1,11 +1,12 @@
 package com.user.project.User.Project.domain.usecase;
 
-import com.user.project.User.Project.domain.model.UserProjects;
 import com.user.project.User.Project.domain.model.User;
+import com.user.project.User.Project.domain.model.UserProjects;
 import com.user.project.User.Project.domain.repository.UserProjectGateway;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
@@ -14,13 +15,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = UserProjectRetrievalUseCaseTest.TestConfig.class)
@@ -50,13 +52,11 @@ public class UserProjectRetrievalUseCaseTest {
         Long userId = 1L;
         Pageable pageable = PageRequest.of(0, 10);
 
-        // create populated mock User objects
         User user1 = Mockito.mock(User.class);
         when(user1.getId()).thenReturn(1L);
         User user2 = Mockito.mock(User.class);
         when(user2.getId()).thenReturn(2L);
 
-        // create populated mock UserProjects and attach users
         UserProjects up1 = Mockito.mock(UserProjects.class);
         when(up1.getUser()).thenReturn(user1);
         UserProjects up2 = Mockito.mock(UserProjects.class);
@@ -69,11 +69,9 @@ public class UserProjectRetrievalUseCaseTest {
 
         Page<UserProjects> result = useCase.retrieveProjectsByUserId(userId, pageable);
 
-        // basic checks
         assertNotNull(result);
         assertEquals(content.size(), result.getContent().size(), "returned page size should match provided content size");
 
-        // validate fields on each returned item
         for (int i = 0; i < content.size(); i++) {
             UserProjects expected = content.get(i);
             UserProjects actual = result.getContent().get(i);

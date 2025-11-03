@@ -38,7 +38,6 @@ public class UserCreationUseCaseTest {
 
     @Test
     void shouldCreateUserSuccessfully() {
-        // use a real/populated User instance instead of a mock
         User user = new User();
         user.setId(1L);
         user.setName("Jane Doe");

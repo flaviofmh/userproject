@@ -53,35 +53,29 @@ public class UserProjectCreationUseCaseTest {
     void shouldCreateUserProjectWhenUserExists() {
         Long userId = 1L;
 
-        // create real/populated User instance
+
         User user = new User();
-        // set core fields (assumes typical POJO setters exist)
+
         user.setId(userId);
         user.setName("John Doe");
         user.setEmail("john.doe@example.com");
 
-        // create real/populated UserProjects instance and attach user
         UserProjects userProjects = new UserProjects();
         userProjects.setUser(user);
         userProjects.setName("Integration Project");
 
-        // stub gateways to return real instances
         when(userGateway.findById(userId)).thenReturn(user);
         when(userProjectGateway.save(userProjects)).thenReturn(userProjects);
 
-        // execute
         UserProjects result = useCase.execute(userProjects);
 
-        // assertions: returned object and nested user must be non-null and fields preserved
         assertNotNull(result, "result should not be null");
         assertNotNull(result.getUser(), "result.user should not be null");
 
-        // validate user id and other fields are populated
         assertEquals(userId, result.getUser().getId(), "user id should match");
         assertNotNull(result.getUser().getName(), "user.name should not be null");
         assertNotNull(result.getUser().getEmail(), "user.email should not be null");
 
-        // verify gateway interactions
         verify(userGateway).findById(userId);
         verify(userProjectGateway).save(userProjects);
     }

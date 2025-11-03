@@ -39,7 +39,7 @@ public class UserProjectGatewayImpl implements UserProjectGateway {
     public Page<UserProjects> findAllByUserId(Long id, Pageable pageable) {
         Page<UserProjectEntity> entities = userProjectEntityRepository.findAllByUserId(id, pageable);
         return entities.map(entity ->
-                new UserProjects(entity.getId(), null, entity.getName())
+                userProjectInfraMapper.toDomain(entity, null)
         );
     }
 }

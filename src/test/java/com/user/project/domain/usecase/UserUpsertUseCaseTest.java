@@ -1,0 +1,63 @@
+package com.user.project.domain.usecase;
+
+import com.user.project.domain.model.User;
+import com.user.project.domain.repository.UserGateway;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = UserUpsertUseCaseTest.TestConfig.class)
+public class UserUpsertUseCaseTest {
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public UserGateway userGateway() {
+            return Mockito.mock(UserGateway.class);
+        }
+
+        @Bean
+        public UserUpsertUseCase userCreationUseCase(UserGateway userGateway) {
+            return new UserUpsertUseCase(userGateway);
+        }
+    }
+
+    @Autowired
+    private UserUpsertUseCase useCase;
+
+    @Autowired
+    private UserGateway userGateway;
+
+    @Test
+    void shouldCreateUserSuccessfully() {
+        User user = new User();
+        user.setId(1L);
+        user.setName("Jane Doe");
+        user.setEmail("jane.doe@example.com");
+
+        Mockito.when(userGateway.save(user)).thenReturn(user);
+
+        User result = useCase.execute(user);
+
+        assertNotNull(result, "result should not be null");
+        assertEquals(user.getId(), result.getId(), "ids should match");
+        assertEquals(user.getName(), result.getName(), "names should match");
+        assertEquals(user.getEmail(), result.getEmail(), "emails should match");
+
+        assertNotNull(result.getName());
+        assertFalse(result.getName().isBlank(), "name should not be blank");
+        assertNotNull(result.getEmail());
+        assertFalse(result.getEmail().isBlank(), "email should not be blank");
+
+        Mockito.verify(userGateway).save(user);
+    }
+
+}

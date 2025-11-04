@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: userproject-postgres
+    environment:
+      POSTGRES_DB: userproject_db
+      POSTGRES_USER: userproject
+      POSTGRES_PASSWORD: userproject123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - userproject-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U userproject -d userproject_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: userproject-app
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/userproject_db
+      SPRING_DATASOURCE_USERNAME: userproject
+      SPRING_DATASOURCE_PASSWORD: userproject123
+      JAVA_OPTS: "-Xms512m -Xmx1024m"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - userproject-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  userproject-network:
+    driver: bridge

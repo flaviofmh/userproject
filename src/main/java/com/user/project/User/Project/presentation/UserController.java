@@ -51,7 +51,7 @@ public class UserController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserResponse updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserRequest userRequest) {
-        retrieveUserInformationUseCase.execute(id); // Ensure the user exists
+        retrieveUserInformationUseCase.execute(id);
         User userDomain = userMapper.toDomain(userRequest);
         userDomain.setId(id);
         User updatedUser = userUpsertUseCase.execute(userDomain);
